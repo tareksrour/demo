@@ -95,7 +95,7 @@ class Handler(FileSystemEventHandler):
                 print(e)
 
 
-@app.route("/")
+@app.route("/web")
 def list_db():
     try:
         cols = list(client.data.imported.find_one().keys())
