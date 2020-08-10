@@ -1,0 +1,29 @@
+FROM ubuntu
+
+RUN apt-get update && \
+    apt-get install -y \
+    bash curl nano net-tools zip unzip \
+    jq dnsutils iputils-ping
+
+RUN apt-
+# Install MongoDB
+RUN apt-get install -y mongodb
+
+# Setup Consul and Goreman
+RUN mkdir -p /data/db
+
+RUN curl  https://releases.hashicorp.com/consul/1.8.0/consul_1.8.0_linux_amd64.zip > /tmp/consul.zip
+RUN cd /bin && unzip /tmp/consul.zip && chmod +x /bin/consul && rm /tmp/consul.zip
+
+VOLUME data:/data/db
+
+RUN mkdir -p /etc/consul.d/check_scripts
+
+ADD mongo_primary.sh /etc/consul.d/check_scripts
+ADD mongo_primary.json /etc/consul.d/
+ADD config.js /tmp/
+
+EXPOSE $MONGO_PORT
+
+CMD ["mongod","--bind_ip_all","--port","$MONGO_PORT","--dbpath","/data/db","--replSet" ,"consuldemo"]
+

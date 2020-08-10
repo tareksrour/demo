@@ -1,0 +1,149 @@
+version: "3.6"
+
+services:
+  consul_server:
+    build:
+      context: consul_server
+      dockerfile: Dockerfile
+    image: consul_server
+    ports:
+      - 8300:8300
+      - 8301:8301
+      - 8302:8302
+      - 8400:8400
+      - 8500:8500
+    environment:
+      - NODE=consul_server
+
+  load_balancer:
+    image: fabiolb/fabio
+    ports:
+      - 9998:9998
+      - 9999:9999
+    command: -registry.consul.addr="192.168.163.132:8500"
+    depends_on:
+      - consul_server
+
+  mongo_1:
+    build:
+      context: mongo
+      dockerfile: Dockerfile
+    image: mongo_consul
+    dns:
+      - 192.168.163.132
+      - 8.8.8.8
+      - 8.8.4.4
+    volumes:
+      - /tmp/db1:/data/db
+    environment:
+      - NODE=mongo_1
+      - MONGO_PORT=27017
+    restart: always
+    ports:
+      - 27017:27017
+      - 28017:28017
+    depends_on:
+      - consul_server
+      - mongo_2
+      - mongo_3
+
+  mongo_2:
+    build:
+      context: mongo
+      dockerfile: Dockerfile
+    image: mongo_consul
+    dns:
+      - 192.168.163.132
+      - 8.8.8.8
+      - 8.8.4.4
+    volumes:
+      - /tmp/db2:/data/db
+    environment:
+      - NODE=mongo_2
+      - MONGO_PORT=27017
+    restart: always
+    ports:
+      - 27018:27017
+      - 28018:28017
+    depends_on:
+      - consul_server
+
+
+  mongo_3:
+    build:
+      context: mongo
+      dockerfile: Dockerfile
+    image: mongo_consul
+    dns:
+      - 192.168.163.132
+      - 8.8.8.8
+      - 8.8.4.4
+    volumes:
+      - /tmp/db3:/data/db
+    environment:
+      - NODE=mongo_3
+      - MONGO_PORT=27017
+    restart: always
+    ports:
+      - 27019:27017
+      - 28019:28017
+    depends_on:
+      - consul_server
+  mongo_rs:
+    build:
+      context: mongo
+      dockerfile: Dockerfile
+    image: mongo_consul
+    environment:
+      - NODE=mongo_rs
+    dns:
+      - 192.168.163.132
+      - 8.8.8.8
+      - 8.8.4.4
+    entrypoint: ["bash","/tmp/mongo.sh"]
+    depends_on:
+      - consul_server
+      - mongo_1
+      - mongo_2
+      - mongo_3
+
+  web_1:
+    build:
+      context: web
+      dockerfile: Dockerfile
+    image: web_consul
+    volumes:
+      - /tmp/wa1:/tmp/watched
+    environment:
+      - NODE=web_1
+    dns:
+      - 192.168.163.132
+      - 8.8.8.8
+      - 8.8.4.4
+    depends_on:
+      - consul_server
+      - load_balancer
+      - mongo_1
+      - mongo_2
+      - mongo_3
+      - mongo_rs
+  web_2:
+    build:
+      context: web
+      dockerfile: Dockerfile
+    image: web_consul
+    volumes:
+      - /tmp/wa2:/tmp/watched
+    environment:
+      - NODE=web_2
+    dns:
+      - 192.168.163.132
+      - 8.8.8.8
+      - 8.8.4.4
+    depends_on:
+      - consul_server
+      - load_balancer
+      - mongo_1
+      - mongo_2
+      - mongo_3
+      - mongo_rs

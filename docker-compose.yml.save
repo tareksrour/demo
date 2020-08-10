@@ -1,0 +1,43 @@
+version: "3.6"
+
+services:
+  consul_server:
+    build:
+      context: consul_server
+      dockerfile: Dockerfile
+    image: consul_server
+    ports:
+      - 8300:8300
+      - 8301:8301
+      - 8302:8302
+      - 8400:8400
+      - 8500:8500
+    environment:
+      - NODE=consul-server
+
+  load_balancer:
+    image: fabiolb/fabio
+    ports:
+      - 9998:9998
+      - 9999:9999
+    command: -registry.consul.addr="127.0.0.1:8500"
+    depends_on:
+      - consul_server   
+  mongo_1:
+    build:
+      context: mongo
+      dockerfile: Dockerfile
+    image: mongo_consul
+    dns:
+      - 127.0.0.1
+      - 8.8.8.8
+      - 8.8.4.4
+    environment:
+      - NODE=mongo-1
+      - MONGO_PORT=27017
+    restart: always
+    ports:
+      - 27017:27017
+      - 28017:28017
+depends_on:
+      - consul_server

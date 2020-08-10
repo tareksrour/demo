@@ -1,0 +1,16 @@
+{
+  "services": [
+    {
+      "check": {
+        "interval": "10s",
+        "args": ["/etc/consul.d/check_scripts/mongo_primary.sh"]
+      },
+      "name": "mongodb-primary",
+      "port": 27017,
+      "tags": [
+        "mongodb",
+        "master"
+      ]
+    }
+  ]
+}
