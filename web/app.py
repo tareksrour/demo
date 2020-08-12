@@ -27,7 +27,7 @@ def parse_type(s):
 
 
 class Watcher:
-    DIRECTORY_TO_WATCH = "/tmp/watched"
+    DIRECTORY_TO_WATCH = "/tmp/watched/"
 
     def __init__(self):
         self.observer = Observer()
@@ -35,6 +35,7 @@ class Watcher:
     def run(self):
         event_handler = Handler()
         self.observer.schedule(event_handler, self.DIRECTORY_TO_WATCH, recursive=True)
+        print("******Starting watching directory "+self.DIRECTORY_TO_WATCH)
         self.observer.start()
         try:
             while True:
@@ -52,6 +53,7 @@ class Handler(FileSystemEventHandler):
 
     @staticmethod
     def on_any_event(event, **kwargs):
+        print("****"+event.event_type+"  "+event.src_path+"*****")
         if event.is_directory:
             return None
 
@@ -146,6 +148,9 @@ if __name__ == '__main__':
     f_thread = FlaskThread()
     w_thread = WatcherThread()
     f_thread.start()
+    w_thread.start()
+    f_thread.join()
+    w_thread.join()
     w_thread.start()
     f_thread.join()
     w_thread.join()

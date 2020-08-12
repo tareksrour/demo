@@ -34,7 +34,7 @@ services:
       - 8.8.8.8
       - 8.8.4.4
     volumes:
-      - /tmp/db1:/data/db
+      - "/tmp/db1:/data/db"
     environment:
       - NODE=mongo_1
       - MONGO_PORT=27017
@@ -57,7 +57,7 @@ services:
       - 8.8.8.8
       - 8.8.4.4
     volumes:
-      - /tmp/db2:/data/db
+      - "/tmp/db2:/data/db"
     environment:
       - NODE=mongo_2
       - MONGO_PORT=27017
@@ -79,7 +79,7 @@ services:
       - 8.8.8.8
       - 8.8.4.4
     volumes:
-      - /tmp/db3:/data/db
+      - "/tmp/db3:/data/db"
     environment:
       - NODE=mongo_3
       - MONGO_PORT=27017
@@ -113,7 +113,7 @@ services:
       dockerfile: Dockerfile
     image: web_consul
     volumes:
-      - /tmp/wa1:/tmp/watched
+      - "/tmp/wa1:/tmp/watched"
     environment:
       - NODE=web_1
     dns:
@@ -133,7 +133,7 @@ services:
       dockerfile: Dockerfile
     image: web_consul
     volumes:
-      - /tmp/wa2:/tmp/watched
+      - "/tmp/wa2:/tmp/watched"
     environment:
       - NODE=web_2
     dns:
