@@ -10,4 +10,4 @@ nohup consul agent -bind $PRIVATE_IP_ADDRESS \
     -config-dir /etc/consul.d \
     -enable-local-script-checks &
 
-python /tmp/app.py
+python3 /tmp/app.py

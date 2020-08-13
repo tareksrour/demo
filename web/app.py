@@ -151,6 +151,3 @@ if __name__ == '__main__':
     w_thread.start()
     f_thread.join()
     w_thread.join()
-    w_thread.start()
-    f_thread.join()
-    w_thread.join()
